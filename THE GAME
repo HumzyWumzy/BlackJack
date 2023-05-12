@@ -6,17 +6,17 @@ discard = []
 class Card:
 
     def __init__(self, value, suit):
-        self.suit = suit
-        self.value = value
+        self._suit = suit
+        self._value = value
     
     def suit(self):
-        return self.suit
+        return self._suit
     
     def value(self):
-        return self.value
+        return self._value
     
     def __str__(self):
-        return f"{self.value} of {self.suit}"
+        return f"{self._value} of {self._suit}"
 
 class Deck(Card):
 
@@ -31,7 +31,7 @@ class Deck(Card):
         random.shuffle(deck)
         
     def size(self):
-        return self._size
+        print(self._size)
     
     def shuffle(self):
         if len(deck) == 52:
@@ -78,9 +78,8 @@ class Blackjack(Deck,Card):
     def _get_score(self, hand):
         score = 0
         
-        for i in range(0,len(hand)):
-            value = hand[i].value
-            
+        for val in hand:
+            value = val.value()
             if value == "Ace":
                 if score > 10:
                     value = int(1)
@@ -112,8 +111,8 @@ class Blackjack(Deck,Card):
             
         hand.append(score)
         # print(hand)
-        for i in range(0,len(hand)):
-            print(hand[i])
+        for i in hand:
+            print(i)
             
         hand.pop()
         
@@ -133,7 +132,8 @@ class Blackjack(Deck,Card):
         
     def hit(self):
         if len(deck) == 0:
-            print("No more cards in deck. Reset Game")
+            print("No more cards in deck. Game is being reset")
+            self.reshuffle()
         else:
             self.draw()
             self._print_current_hand()
@@ -143,4 +143,41 @@ class Blackjack(Deck,Card):
 
 game = Blackjack()
 
-print("test")
+print("\nBlackJack Game has started: can you go through the whole deck without busting :) (type stop to end game)\n".upper())
+
+player_choice = "start"
+while player_choice.lower() != 'stop':
+    print('\nLIST OF ACTIONS:\n',
+    'reshuffle: resets the game so that all the cards are back in the deck and shuffled\n',
+    'hit: deals a new card to your current hand\n',
+    'deal new hand: discards current hand and deals a new hand\n',
+    'deck: prints out all the cards in the deck\n',
+    'shuffle: shuffles the deck\n',
+    'size: checks the size of the deck)\n',
+    'peek: to peek at the next card in the deck\n'
+    )
+    if player_choice == "start":
+        game.deal_new_hand()
+    else:
+        game._print_current_hand()
+    player_choice = input()
+    pc = player_choice.lower()
+    if pc == 'reshuffle': 
+        game.reshuffle()
+    elif pc == 'hit': 
+        game.hit()
+    elif pc == 'deal new hand': 
+        game.deal_new_hand()
+    elif pc == 'show deck': 
+        game.print_deck()
+    elif pc == 'shuffle': 
+        game.shuffle(),
+    elif pc == 'size': 
+        game.size()
+    elif pc == 'peek':
+        game.peek()
+    elif pc != 'stop':
+        print("invalid input, try again, or type stop to end game".upper())
+
+print('\nGame has ended\n'.upper(),
+      'SIZE OF DECK:', len(deck))
