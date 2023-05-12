@@ -1,0 +1,146 @@
+import random
+deck = []
+hand = []
+discard = []
+
+class Card:
+
+    def __init__(self, value, suit):
+        self.suit = suit
+        self.value = value
+    
+    def suit(self):
+        return self.suit
+    
+    def value(self):
+        return self.value
+    
+    def __str__(self):
+        return f"{self.value} of {self.suit}"
+
+class Deck(Card):
+
+    def __init__(self):
+        SUITS = ["Diamonds", "Spades", "Hearts", "Clubs"]
+        VALUES = ["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"]
+        self._size = 52
+        
+        for i in SUITS:
+            for j in VALUES:
+                deck.append(Card(j,i))
+        random.shuffle(deck)
+        
+    def size(self):
+        return self._size
+    
+    def shuffle(self):
+        if len(deck) == 52:
+            random.shuffle(deck)
+        else:
+            Deck()
+
+    def peek(self):
+        print(deck[-1])
+        
+    def draw(self):
+        hand.append(deck[-1])
+        deck.pop()
+        self._size -= 1
+        
+    def add_card(self, card):
+        if len(deck)<52:
+            deck.append(card)
+            self._size += 1
+        else:
+            print("Deck is full")
+
+    def print_deck(self):
+        for i in range(0,len(deck)):
+            print(deck[i])
+            
+    def reset(self):
+        for _ in range(0,len(deck)):
+            deck.pop()
+        for _ in range(0,len(hand)):
+            hand.pop()
+        for _ in range(0,len(discard)):
+            discard.pop()
+        
+        Deck()
+        self._size = 52
+       
+class Blackjack(Deck,Card):
+
+    def __init__(self):
+        Deck()
+        self._size = 52
+    
+    def _get_score(self, hand):
+        score = 0
+        
+        for i in range(0,len(hand)):
+            value = hand[i].value
+            
+            if value == "Ace":
+                if score > 10:
+                    value = int(1)
+                else:
+                    value = int(11)
+            elif value == "Jack":
+                value = int(10)
+            elif value == "Queen":
+                value = int(10)
+            elif value == "King":
+                value = int(10)
+            else:
+                int(value)
+                
+            score += value
+        
+        if score <= 21:
+            return score
+        else:
+            return -1
+        
+    def _print_current_hand(self):
+        score = self._get_score(hand)
+        
+        if self._get_score(hand) == -1:
+            score = "Bust!"
+        else:
+            score = f"Score: {score}"
+            
+        hand.append(score)
+        # print(hand)
+        for i in range(0,len(hand)):
+            print(hand[i])
+            
+        hand.pop()
+        
+    def deal_new_hand(self):
+        for _ in range (0,len(hand)):
+            discard.append(hand.pop())
+            
+        for _ in range(0,2):
+            if len(deck) == 0:
+                print("Deck is empty. Game has been reset")
+                self.reset()
+                break
+            elif len(deck) != 0:
+                self.draw()
+                
+        self._print_current_hand()
+        
+    def hit(self):
+        if len(deck) == 0:
+            print("No more cards in deck. Reset Game")
+        else:
+            self.draw()
+            self._print_current_hand()
+    
+    def reshuffle(self):
+        self.reset()
+
+game = Blackjack()
+
+print("test")
